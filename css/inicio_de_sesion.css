@@ -1,0 +1,69 @@
+/* Reset básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+/* Estilo del cuerpo */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f6f8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+/* Contenedor del login */
+.login-container {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 350px;
+}
+/* Título */
+.login-container h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: #333;
+}
+/* Etiquetas y campos */
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #555;
+}
+input {
+    width: 100%;
+    padding: 0.8rem;
+    margin-bottom: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+/* Botón */
+button {
+    width: 100%;
+    padding: 0.8rem;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+button:hover {
+    background-color: #0056b3;
+}
+/* Enlace de registro */
+.registro {
+    text-align: center;
+    margin-top: 1rem;
+}
+.registro a {
+    color: #007BFF;
+    text-decoration: none;
+}
+.registro a:hover {
+    text-decoration: underline;
+}

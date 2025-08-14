@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/inicio_de_sesion.css">
+    <script src="../js/inicio_de_sesion.js" defer></script>
+    <title>Document</title>
+</head>
+<body>
+    <div class="login-container">
+        <h2>Inicio de Sesión</h2>
+        <form action="../php/inicio_de_sesion.php" method="POST">
+            <label for="usuario">Correo o Usuario:</label>
+            <input type="text" id="usuario" name="usuario" placeholder="Ingresa tu correo o usuario" required>
+            <label for="password">Contraseña:</label>
+            <input type="password" id="password" name="password" placeholder="Ingresa tu contraseña" required>
+            <button type="submit">Iniciar Sesión</button>
+            <p class="registro">
+                ¿No tienes cuenta? <a href="../html/registrarse.html">Registrarse</a>
+            </p>
+        </form>
+    </div>
+</body>
+</html>
