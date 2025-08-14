@@ -1,145 +1,45 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f6f8;
-    padding: 20px;
-    color: #333;
-}
-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
+    margin: 20px;
+    background: #f4f4f4;
 }
 h1 {
-    color: #007BFF;
+    text-align: center;
 }
-.filtros select {
-    padding: 5px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+form {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
 }
-main {
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-    gap: 20px;
-}
-.formulario-tarea {
-    background: white;
-    padding: 15px;
-    border-radius: 5px;
-    box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
-}
-.formulario-tarea label {
-    display: block;
-    margin-top: 10px;
-}
-.formulario-tarea input, 
-.formulario-tarea textarea, 
-.formulario-tarea select {
-    width: 100%;
+form input, form select, form button {
     padding: 8px;
-    margin-top: 5px;
     border: 1px solid #ccc;
-    border-radius: 5px;
+    border-radius: 4px;
 }
-.formulario-tarea button {
-    margin-top: 15px;
-    width: 100%;
-    background-color: #28a745;
+button {
+    background: #4CAF50;
     color: white;
-    border: none;
-    padding: 10px;
-    border-radius: 5px;
     cursor: pointer;
 }
-.formulario-tarea button:hover {
-    background-color: #218838;
+button:hover {
+    background: #45a049;
 }
-.lista-tareas {
-    background: white;
-    padding: 15px;
-    border-radius: 10px;
-    box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
-}
-.lista-tareas table {
+table {
     width: 100%;
     border-collapse: collapse;
-}
-.lista-tareas th, .lista-tareas td {
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
-}
-.lista-tareas th {
-    background-color: #007BFF;
-    color: white;
-}
-.acciones button {
-    padding: 5px 10px;
-    margin-right: 5px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-.acciones .editar {
-    background-color: #ffc107;
-    color: white;
-}
-.acciones .eliminar {
-    background-color: #dc3545;
-    color: white;
-}
-.logs {
-    grid-column: span 2;
+    margin-bottom: 20px;
     background: white;
-    padding: 15px;
+}
+table th, table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+.filter {
+    margin-bottom: 10px;
+}
+#logList {
+    background: white;
+    padding: 10px;
     border-radius: 5px;
-    box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
-    margin-top: -10px;
-    width: 550px;
-}
-.logs ul {
-    list-style: none;
-}
-.logs li {
-    padding: 5px 0;
-    border-bottom: 1px solid #eee;
-}
-#registroAcciones {
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    padding: 15px;
-    margin-top: 20px;
-}
-#registroAcciones h2 {
-    font-size: 1.4rem;
-    margin-bottom: 15px;
-    color: #333;
-}
-#listaLogs {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-#listaLogs li {
-    background: #f9f9f9;
-    border-left: 4px solid #3498db;
-    margin-bottom: 8px;
-    padding: 10px 12px;
-    font-size: 0.95rem;
-    color: #555;
-    border-radius: 4px;
-    transition: background 0.2s ease;
-}
-#listaLogs li:hover {
-    background: #eef6fb;
-}
-#listaLogs li::before {
-    content: "📝 ";
-    font-size: 1rem;
 }

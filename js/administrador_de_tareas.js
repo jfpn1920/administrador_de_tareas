@@ -1,129 +1,128 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const form = document.getElementById("formTarea");
-    const idInput = document.getElementById("idTarea");
-    const titulo = document.getElementById("titulo");
-    const descripcion = document.getElementById("descripcion");
-    const asignadoA = document.getElementById("asignadoA");
-    const estado = document.getElementById("estado");
-    const tbody = document.getElementById("tablaTareas");
-    const filtroEstado = document.getElementById("filtroEstado");
-    const listaLogs = document.getElementById("listaLogs");
-    // Estado en memoria (recuperado de localStorage)
-    let tareas = JSON.parse(localStorage.getItem("tareas")) || [];
-    let logs = JSON.parse(localStorage.getItem("logs")) || [];
-    let editingId = null;
-    // Guardar en localStorage
-    function guardarTareas() {
-        localStorage.setItem("tareas", JSON.stringify(tareas));
+    const taskForm = document.getElementById("taskForm");
+    const taskTableBody = document.querySelector("#taskTable tbody");
+    const filterStatus = document.getElementById("filterStatus");
+    const logList = document.getElementById("logList");
+    // Rutas corregidas para apuntar a la carpeta php
+    const API = {
+        registrarAccion: "../php/registrar_accion.php",
+        obtenerHistorial: "../php/obtener_historial.php"
+    };
+    let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+    let logs = [];
+    function saveTasks() {
+        localStorage.setItem("tasks", JSON.stringify(tasks));
     }
-    function guardarLogs() {
-        localStorage.setItem("logs", JSON.stringify(logs));
-    }
-    // Crear y Actualizar tarea
-    form.addEventListener("submit", (e) => {
-        e.preventDefault();
-        const data = {
-            titulo: titulo.value.trim(),
-            descripcion: descripcion.value.trim(),
-            asignadoA: asignadoA.value.trim(),
-            estado: estado.value,
-        };
-        if (!data.titulo || !data.descripcion) {
-            alert("Por favor, complete título y descripción.");
-            return;
-        }
-        if (editingId) {
-            // Actualizar
-            const idx = tareas.findIndex((t) => t.id === editingId);
-            if (idx > -1) {
-                tareas[idx] = { ...tareas[idx], ...data };
-                registrarLog(`Tarea actualizada: ${data.titulo} (ID ${editingId})`, editingId, data.asignadoA || "Desconocido");
+    // Helper fetch con control de errores y parseo seguro
+    async function fetchJSON(url, options = {}) {
+        const res = await fetch(url, {
+            ...options,
+            headers: {
+                "Accept": "application/json",
+                ...(options.headers || {})
             }
-        } else {
-            // Crear
-            const nueva = { id: Date.now(), ...data };
-            tareas.push(nueva);
-            registrarLog(`Tarea creada: ${nueva.titulo} (ID ${nueva.id})`, nueva.id, data.asignadoA || "Desconocido");
-        }
-        // Guardar y actualizar
-        guardarTareas();
-        form.reset();
-        editingId = null;
-        idInput.value = "";
-        form.querySelector('button[type="submit"]').textContent = "Guardar Tarea";
-        render();
-    });
-    // Renderizar tabla con filtro
-    function render() {
-        tbody.innerHTML = "";
-        const filtro = filtroEstado.value;
-        const lista = filtro === "todas" ? tareas : tareas.filter((t) => t.estado === filtro);
-        lista.forEach((t) => {
-            const tr = document.createElement("tr");
-            tr.innerHTML = `
-                <td>${t.titulo}</td>
-                <td>${t.descripcion}</td>
-                <td>${t.asignadoA || "Nadie"}</td>
-                <td>${capitalizar(t.estado)}</td>
-                <td class="acciones">
-                    <button class="editar">Editar</button>
-                    <button class="eliminar">Eliminar</button>
-                </td>
-            `;
-            // Eventos de editar y eliminar
-            tr.querySelector(".editar").addEventListener("click", () => {
-                editingId = t.id;
-                idInput.value = t.id;
-                titulo.value = t.titulo;
-                descripcion.value = t.descripcion;
-                asignadoA.value = t.asignadoA;
-                estado.value = t.estado;
-                form.querySelector('button[type="submit"]').textContent = "Actualizar Tarea";
-            });
-            tr.querySelector(".eliminar").addEventListener("click", () => {
-                tareas = tareas.filter((x) => x.id !== t.id);
-                guardarTareas();
-                registrarLog(`Tarea eliminada: ${t.titulo} (ID ${t.id})`, t.id, t.asignadoA || "Desconocido");
-                render();
-            });
-            tbody.appendChild(tr);
         });
-        renderLogs();
-    }
-    function registrarLog(mensaje, tareaId, usuario) {
-        const fecha = new Date().toLocaleString();
-        const log = `[${fecha}] ${mensaje}`;
-        logs.unshift(log);
-        guardarLogs();
-        renderLogs();
-        // Enviar al servidor por AJAX
-        fetch('../php/administrador_de_tareas.php', { // <-- ruta correcta
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: `idTarea=${tareaId}&accion=${encodeURIComponent(mensaje)}&usuario=${encodeURIComponent(usuario)}`
-        })
-        .then(res => {
-            if (!res.ok) throw new Error("HTTP error " + res.status);
-            return res.json();
-        })
-        .then(data => {
-            if (!data.success) {
-                console.error("Error guardando historial:", data.message);
-            }
-        })
-        .catch(err => console.error("Error AJAX:", err));
+        const text = await res.text();
+        if (!res.ok) {
+            console.error(`HTTP ${res.status} en ${url}:`, text);
+            throw new Error(`HTTP ${res.status} ${res.statusText}`);
+        }
+        try {
+            return JSON.parse(text);
+        } catch {
+            console.error(`Respuesta no JSON desde ${url}:`, text);
+            throw new Error("Respuesta no JSON");
+        }
     }
     function renderLogs() {
-        listaLogs.innerHTML = "";
-        logs.forEach(log => {
+        logList.innerHTML = "";
+        logs.forEach(entry => {
             const li = document.createElement("li");
-            li.textContent = log;
-            listaLogs.appendChild(li);
+            li.textContent = entry;
+            logList.appendChild(li);
         });
     }
-    filtroEstado.addEventListener("change", render);
-    function capitalizar(s) {
-        return s.replace("_", " ").replace(/\b\w/g, (c) => c.toUpperCase());
+    // Ahora también recibimos "estado"
+    async function logAction(usuario, accion, estado) {
+        const entry = `${new Date().toLocaleString()} - ${accion} [${estado}]`;
+        logs.unshift(entry);
+        renderLogs();
+        try {
+            const body = new URLSearchParams({ usuario, accion, estado }).toString();
+            const data = await fetchJSON(API.registrarAccion, {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body
+            });
+            if (data.status !== "ok") {
+                console.error("Error guardando en BD:", data);
+            }
+        } catch (err) {
+            console.error("Error de conexión al guardar log:", err);
+        }
     }
-    render();
+    async function loadLogs() {
+        try {
+            const data = await fetchJSON(API.obtenerHistorial);
+            logs = data.map(l => `${l.fecha} - ${l.usuario}: ${l.accion} [${l.estado}]`);
+            renderLogs();
+        } catch (err) {
+            console.error("Error cargando historial:", err);
+        }
+    }
+    function renderTasks() {
+        taskTableBody.innerHTML = "";
+        const filter = filterStatus.value;
+        tasks
+            .filter(task => filter === "Todos" || task.status === filter)
+            .forEach((task, index) => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${task.title}</td>
+                    <td>${task.user}</td>
+                    <td>${task.status}</td>
+                    <td>
+                        <button onclick="editTask(${index})">Editar</button>
+                        <button onclick="deleteTask(${index})">Eliminar</button>
+                    </td>
+                `;
+                taskTableBody.appendChild(row);
+            });
+    }
+    taskForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const id = document.getElementById("taskId").value;
+        const title = document.getElementById("taskTitle").value;
+        const user = document.getElementById("taskUser").value;
+        const status = document.getElementById("taskStatus").value;
+        if (id) {
+            tasks[id] = { title, user, status };
+            await logAction(user, `Tarea actualizada: "${title}"`, status);
+        } else {
+            tasks.push({ title, user, status });
+            await logAction(user, `Tarea creada: "${title}"`, status);
+        }
+        saveTasks();
+        renderTasks();
+        taskForm.reset();
+        document.getElementById("taskId").value = "";
+    });
+    filterStatus.addEventListener("change", renderTasks);
+    window.editTask = function(index) {
+        const task = tasks[index];
+        document.getElementById("taskId").value = index;
+        document.getElementById("taskTitle").value = task.title;
+        document.getElementById("taskUser").value = task.user;
+        document.getElementById("taskStatus").value = task.status;
+    };
+    window.deleteTask = async function(index) {
+        const t = tasks[index];
+        await logAction(t.user, `Tarea eliminada: "${t.title}"`, t.status);
+        tasks.splice(index, 1);
+        saveTasks();
+        renderTasks();
+    };
+    // Inicializar
+    renderTasks();
+    loadLogs();
 });
